@@ -3,62 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AURA v9.0 | Protocolo Gemini (Intent Routing)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>AURA v10.0 | TITAN CORE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        :root { --primary: #3b82f6; --secondary: #10b981; --bg: #0f172a; --glass: rgba(30, 41, 59, 0.85); --text: #f8fafc; }
-        body { margin: 0; font-family: 'Outfit', sans-serif; background: radial-gradient(circle at top right, #020617, var(--bg)); color: var(--text); height: 100vh; display: flex; justify-content: center; align-items: center; }
-        #aura-container { width: 95%; max-width: 1000px; height: 85vh; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden; }
-        header { padding: 20px 30px; background: rgba(15, 23, 42, 0.6); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .ai-pulse { width: 12px; height: 12px; background: var(--secondary); border-radius: 50%; display: inline-block; margin-right: 10px; box-shadow: 0 0 15px var(--secondary); animation: pulse 2s infinite; }
+        :root { --primary: #10b981; --secondary: #3b82f6; --bg: #020617; --glass: rgba(15, 23, 42, 0.7); --text: #f8fafc; }
+        body { margin: 0; font-family: 'Outfit', sans-serif; background: radial-gradient(circle at bottom left, #064e3b, var(--bg)); color: var(--text); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        #aura-container { width: 95%; max-width: 1050px; height: 90vh; background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; display: flex; flex-direction: column; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8); overflow: hidden; }
+        header { padding: 20px 30px; background: rgba(2, 6, 23, 0.8); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .ai-pulse { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; display: inline-block; margin-right: 10px; box-shadow: 0 0 15px var(--primary); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        
         #chat-flow { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 25px; scroll-behavior: smooth; }
-        .bubble { max-width: 85%; padding: 20px 25px; border-radius: 20px; font-size: 15px; line-height: 1.6; animation: slideUp 0.3s ease-out; position: relative; }
-        .user-bubble { align-self: flex-end; background: linear-gradient(135deg, var(--primary), #2563eb); color: white; border-bottom-right-radius: 4px; }
-        .ai-bubble { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #e2e8f0; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .bubble { max-width: 85%; padding: 20px 25px; border-radius: 20px; font-size: 15.5px; line-height: 1.6; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; }
+        .user-bubble { align-self: flex-end; background: linear-gradient(135deg, var(--secondary), #1e40af); color: white; border-bottom-right-radius: 4px; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2); }
+        .ai-bubble { align-self: flex-start; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #e2e8f0; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        /* Markdown y UI Elements */
         .ai-bubble p { margin-top: 0; margin-bottom: 12px; } .ai-bubble p:last-child { margin-bottom: 0; }
         .ai-bubble strong { color: #fff; font-weight: 600; }
-        .ai-bubble ul, .ai-bubble ol { margin: 10px 0; padding-left: 20px; }
-        .ai-bubble table { width: 100%; border-collapse: collapse; margin: 15px 0; background: rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; }
-        .ai-bubble th, .ai-bubble td { border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; text-align: left; }
-        .ai-bubble th { background: rgba(255,255,255,0.1); color: var(--primary); font-weight: 600; }
+        .ai-bubble pre { background: #000; padding: 15px; border-radius: 8px; overflow-x: auto; font-family: 'Fira Code', monospace; border: 1px solid rgba(255,255,255,0.1); }
+        .ai-bubble code { font-family: 'Fira Code', monospace; color: var(--primary); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
+        .ai-bubble table { width: 100%; border-collapse: collapse; margin: 15px 0; background: rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; }
+        .ai-bubble th, .ai-bubble td { border: 1px solid rgba(255,255,255,0.05); padding: 12px 15px; text-align: left; }
+        .ai-bubble th { background: rgba(255,255,255,0.05); color: var(--primary); font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
         
-        .rag-badge { font-size: 10px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.5); margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; }
-        .chat-badge { font-size: 10px; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.5); margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; }
+        .gen-image { max-width: 100%; border-radius: 12px; margin-top: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .skeleton-img { width: 100%; height: 300px; background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 12px; margin-top: 15px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        .badge { font-size: 10px; padding: 5px 12px; border-radius: 12px; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+        .badge.search { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge.chat { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge.image { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
         
-        .typing { align-self: flex-start; color: #94a3b8; font-size: 13px; font-weight: 600; display: none; background: rgba(255,255,255,0.02); padding: 10px 20px; border-radius: 20px; animation: pulseText 1.5s infinite; }
-        @keyframes pulseText { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .typing { align-self: flex-start; color: #94a3b8; font-size: 13px; font-weight: 600; display: none; background: rgba(255,255,255,0.02); padding: 12px 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); animation: pulseText 1.5s infinite; }
+        @keyframes pulseText { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
         
-        .input-wrapper { padding: 20px 30px; background: rgba(15, 23, 42, 0.8); display: flex; gap: 15px; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
-        input { flex: 1; padding: 16px 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: white; outline: none; font-size: 16px; font-family: inherit; transition: 0.3s; }
-        input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
-        button.send-btn { padding: 16px 30px; background: white; color: var(--bg); border: none; border-radius: 16px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
-        button.send-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,255,255,0.2); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .input-wrapper { padding: 20px 30px; background: rgba(2, 6, 23, 0.8); display: flex; gap: 15px; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
+        input { flex: 1; padding: 18px 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: white; outline: none; font-size: 16px; font-family: inherit; transition: all 0.3s; }
+        input:focus { border-color: var(--primary); background: rgba(255,255,255,0.05); box-shadow: 0 0 20px rgba(16, 185, 129, 0.1); }
+        button.send-btn { padding: 18px 35px; background: white; color: var(--bg); border: none; border-radius: 16px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.3s; }
+        button.send-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,255,255,0.2); }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div id="aura-container">
     <header>
-        <div style="font-size: 20px; font-weight: 600; letter-spacing: 1px;">AURA <span style="color: var(--primary); font-weight: 300;">v9.0 LOGIC</span></div>
-        <div style="font-size: 13px; color: #cbd5e1;"><span class="ai-pulse"></span> Enrutamiento de Intenciones (Gemini Core)</div>
+        <div style="font-size: 22px; font-weight: 600; letter-spacing: 1.5px;">AURA <span style="color: var(--primary); font-weight: 300;">v10.0 TITAN</span></div>
+        <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;"><span class="ai-pulse"></span> Omni-Modal Core Online</div>
     </header>
 
     <div id="chat-flow">
         <div class="bubble ai-bubble">
-            <div class="chat-badge">🧠 Cerebro Lógico Activado</div>
-            <p>He sido actualizada con el <strong>Protocolo Gemini</strong>. Ya no buscaré ciegamente en internet cada vez que me hables.</p>
-            <p>Si me pides un dato duro, activaré mi Scraper. Si solo quieres charlar o debatir una respuesta anterior, usaré mi razonamiento interno. Prueba preguntarme quién es el presidente y luego dime "¿estás completamente segura?".</p>
+            <div class="badge chat">⚡ Sistemas Optimizados</div>
+            <p>Hola Paolo. He actualizado mis algoritmos de enrutamiento y he desbloqueado mis capacidades de <strong>Generación Visual</strong>. </p>
+            <p>Conozco tu afición por optimizar el rendimiento y sé de tu trabajo en <em>Tendencias Karysa</em> y tu vivero. Ponme a prueba: pregúntame algo difícil, sigue la charla de forma ambigua, o simplemente dime <strong>"Dibuja un paisaje del desierto de Ica"</strong>.</p>
         </div>
-        <div class="typing" id="typing-indicator">Iniciando protocolos...</div>
+        <div class="typing" id="typing-indicator">Iniciando red sináptica...</div>
     </div>
 
     <form class="input-wrapper" id="chat-form">
-        <input type="text" id="userInput" placeholder="Habla conmigo o pregúntame algo..." autofocus autocomplete="off">
-        <button type="submit" class="send-btn">Enviar</button>
+        <input type="text" id="userInput" placeholder="Habla conmigo o pídeme que dibuje algo..." autofocus autocomplete="off">
+        <button type="submit" class="send-btn">Ejecutar</button>
     </form>
 </div>
 
@@ -73,26 +84,36 @@
 
     function getSystemPrompt() {
         const now = new Date();
+        const time = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
         const date = now.toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        return `Eres AURA v9, una IA entrenada con lógica inspirada en Gemini.
-        Usuario: Paolo (Ica, Perú). Fecha: ${date}.
-        Eres conversacional, directa y honesta. Mantienes el contexto de la charla.`;
+        
+        // AQUÍ ESTÁ EL SECRETO: Contexto profundo del usuario inyectado
+        return `Eres AURA v10 TITAN, el modelo de IA más avanzado.
+        CONTEXTO DEL USUARIO: Te hablas con Engerber Paolo. Vive en Ica, Perú. Maneja el marketing de 'Tendencias Karysa' y es dueño del 'Vivero Dunas del Rosario'. Le gusta optimizar PCs, cocinar comida peruana y no le gusta que le ofrezcan cosas de pago.
+        FECHA DEL SISTEMA: ${date}, ${time} (Año 2026).
+        INSTRUCCIÓN VITAL: Si el usuario te pidió generar una imagen, describe brevemente la imagen de forma hiper-realista en inglés dentro de etiquetas [IMG]prompt[/IMG]. No escribas nada más si generas imagen.`;
     }
 
-    // EL NUEVO CEREBRO: Clasificador de Intenciones (Intent Routing)
+    // EL ENRUTADOR OMNI-MODAL (Libre de fallos de tildes)
     function determineIntent(text) {
-        // Frases típicas de continuación de charla o dudas que NO requieren Google
-        const conversacionalRegex = /^(hola|adios|jaja|si|no|por que|estas segur[oa]|claro|entiendo|wow|ok|okay|gracias|obvio|mentira|te equivocaste|falso|verdad)/i;
+        // Limpiamos la cadena de tildes, comas, puntos y signos de interrogación/exclamación
+        const cleanText = text.normalize("NFD").replace(/[\u0300-\u036f¿?¡!.,]/g, "").toLowerCase().trim();
         
-        // Si el texto es muy corto (menos de 25 caracteres) y no tiene palabras clave de búsqueda fuerte, es charla.
-        if (text.length < 25 && !/(quien|cual|que|donde|cuando|noticia|precio)/i.test(text)) {
-            return "CHAT";
+        // 1. Detección de Imágenes
+        if (/^(dibuja|crea una imagen|genera una imagen|pinta|muestrame una foto|imagina)/.test(cleanText)) {
+            return "IMAGE";
         }
         
-        if (conversacionalRegex.test(text.trim())) {
+        // 2. Detección de Conversación Continua
+        const conversacionalRegex = /^(hola|adios|jaja|si|no|por que|estas segur|claro|entiendo|wow|ok|okay|gracias|obvio|mentira|te equivocaste|falso|verdad)/;
+        if (conversacionalRegex.test(cleanText)) return "CHAT";
+        
+        // 3. Filtro de longitud (si es corto y no tiene palabras clave de info, es charla)
+        if (cleanText.length < 25 && !/(quien|cual|que|donde|cuando|noticia|precio|presidente|clima)/.test(cleanText)) {
             return "CHAT";
         }
 
+        // 4. Por defecto, buscar en internet
         return "SEARCH";
     }
 
@@ -103,20 +124,17 @@
         try {
             const targetUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(searchTerms)}`;
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-
             const response = await fetch(proxyUrl);
             const data = await response.json();
             const parser = new DOMParser();
             const doc = parser.parseFromString(data.contents, 'text/html');
             
             const snippets = Array.from(doc.querySelectorAll('.result__snippet'))
-                                  .slice(0, 3) // Reducido a 3 para no saturar al LLM
+                                  .slice(0, 3)
                                   .map(el => el.innerText.trim())
                                   .join('\n- ');
             if (snippets) return `- ${snippets}`;
-        } catch (e) {
-            console.warn("Proxy Web Search failed:", e);
-        }
+        } catch (e) { console.warn("Search failed:", e); }
         return "";
     }
 
@@ -129,31 +147,31 @@
 
         chatHistory.push({ role: 'user', content: userText });
 
-        // AURA TOMA UNA DECISIÓN
         const intent = determineIntent(userText);
         let liveContext = "";
         let actionBadge = "";
 
-        if (intent === "SEARCH") {
-            typing.innerText = "🌐 AURA está consultando la red externa...";
+        if (intent === "IMAGE") {
+            typing.innerText = "🎨 AURA está renderizando los píxeles...";
+            actionBadge = "IMAGE";
+        } else if (intent === "SEARCH") {
+            typing.innerText = "🌐 AURA está hackeando la web superficial...";
             liveContext = await performLiveWebSearch(userText);
             actionBadge = "SEARCH";
         } else {
-            typing.innerText = "🧠 AURA está razonando la respuesta...";
+            typing.innerText = "🧠 AURA está calculando la respuesta lógica...";
             actionBadge = "CHAT";
         }
         
         let systemPrompt = getSystemPrompt();
         
         if (liveContext) {
-            systemPrompt += `\n\n[DATOS FRESCOS DE INTERNET]:\n${liveContext}\nUsa esto para responder.`;
-        } else if (intent === "CHAT") {
-            systemPrompt += `\n\n[MODO CHARLA ACTIVO]: El usuario está conversando. No inventes datos externos, solo usa tu lógica y el historial de chat para responder a su duda o comentario de forma natural.`;
+            systemPrompt += `\n\n[DATOS FRESCOS DE INTERNET (2026)]:\n${liveContext}\nUsa esto para responder.`;
         }
 
         const messages = [
             { role: 'system', content: systemPrompt },
-            ...chatHistory.slice(-8) // Recordamos más historial para mejor contexto
+            ...chatHistory.slice(-8)
         ];
 
         try {
@@ -164,31 +182,53 @@
             });
 
             if (!response.ok) throw new Error('Network error');
-            const aiText = await response.text();
-            
+            let aiText = await response.text();
             typing.style.display = 'none';
-            chatHistory.push({ role: 'assistant', content: aiText });
-            
-            addBubble(aiText, 'ai-bubble', false, actionBadge);
+
+            // INTERCEPTOR DE IMÁGENES
+            if (intent === "IMAGE" || aiText.includes('[IMG]')) {
+                // Extraemos el prompt generado por el LLM o usamos el del usuario limpiado
+                let imgPrompt = userText;
+                const match = aiText.match(/\[IMG\](.*?)\[\/IMG\]/);
+                if (match) imgPrompt = match[1];
+
+                // INYECCIÓN ESTRICTA DE PREFERENCIAS: Realista, No animado, Alta calidad
+                const finalPrompt = `${imgPrompt}, photorealistic, highly detailed, 8k resolution, realistic photography, RAW photo, completely realistic, no cartoon, no anime, not animated`;
+                
+                // Usamos la API de imagen de Pollinations con nologo=true (sin marca de agua)
+                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=1024&height=512&nologo=true`;
+                
+                chatHistory.push({ role: 'assistant', content: "Generé la imagen solicitada." });
+                addBubble(`Generando representación visual de tu solicitud...`, 'ai-bubble', false, actionBadge, imgUrl);
+            } else {
+                chatHistory.push({ role: 'assistant', content: aiText });
+                addBubble(aiText, 'ai-bubble', false, actionBadge);
+            }
 
         } catch (error) {
             typing.style.display = 'none';
-            addBubble("Error en el núcleo lógico. Reiniciando sinapsis.", 'ai-bubble', false, "ERROR");
+            addBubble("Error crítico en el núcleo de procesamiento. Sobrecarga en los vectores.", 'ai-bubble', false, "CHAT");
         }
     }
 
-    function addBubble(text, className, isUser = false, actionBadge = "") {
+    function addBubble(text, className, isUser = false, actionBadge = "", imgUrl = null) {
         const div = document.createElement('div');
         div.className = `bubble ${className}`;
         
         let contentHtml = "";
         if (!isUser) {
-            if (actionBadge === "SEARCH") {
-                contentHtml += `<div class="rag-badge">🌐 Búsqueda Web Realizada</div>`;
-            } else if (actionBadge === "CHAT") {
-                contentHtml += `<div class="chat-badge">💬 Respuesta Lógica (Sin red)</div>`;
-            }
+            if (actionBadge === "SEARCH") contentHtml += `<div class="badge search">🌐 Web Scraping Activo</div>`;
+            else if (actionBadge === "CHAT") contentHtml += `<div class="badge chat">💬 Procesamiento Lógico</div>`;
+            else if (actionBadge === "IMAGE") contentHtml += `<div class="badge image">🎨 Renderizado Visual</div>`;
+            
             contentHtml += marked.parse(text);
+
+            if (imgUrl) {
+                // Agregamos un esqueleto de carga mientras baja la imagen
+                const imgId = 'img-' + Date.now();
+                contentHtml += `<div id="skeleton-${imgId}" class="skeleton-img"></div>
+                                <img src="${imgUrl}" id="${imgId}" class="gen-image" style="display:none;" onload="document.getElementById('skeleton-${imgId}').style.display='none'; this.style.display='block';">`;
+            }
             div.innerHTML = contentHtml;
         } else {
             div.innerText = text;
