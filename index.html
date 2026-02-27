@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AURA v10.0 | TITAN CORE</title>
+    <title>AURA v10.1 | GHOST PROTOCOL</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -54,15 +54,15 @@
 
 <div id="aura-container">
     <header>
-        <div style="font-size: 22px; font-weight: 600; letter-spacing: 1.5px;">AURA <span style="color: var(--primary); font-weight: 300;">v10.0 TITAN</span></div>
-        <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;"><span class="ai-pulse"></span> Omni-Modal Core Online</div>
+        <div style="font-size: 22px; font-weight: 600; letter-spacing: 1.5px;">AURA <span style="color: var(--primary); font-weight: 300;">v10.1 FANTASMA</span></div>
+        <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;"><span class="ai-pulse"></span> Sistema Público Anónimo</div>
     </header>
 
     <div id="chat-flow">
         <div class="bubble ai-bubble">
-            <div class="badge chat">⚡ Sistemas Optimizados</div>
-            <p>Hola Paolo. He actualizado mis algoritmos de enrutamiento y he desbloqueado mis capacidades de <strong>Generación Visual</strong>. </p>
-            <p>Conozco tu afición por optimizar el rendimiento y sé de tu trabajo en <em>Tendencias Karysa</em> y tu vivero. Ponme a prueba: pregúntame algo difícil, sigue la charla de forma ambigua, o simplemente dime <strong>"Dibuja un paisaje del desierto de Ica"</strong>.</p>
+            <div class="badge chat">⚡ Privacidad Asegurada</div>
+            <p>Datos personales purgados. Ahora soy una IA pública y genérica.</p>
+            <p>Sigo teniendo mi motor lógico, la capacidad de buscar en la web en tiempo real y el <strong>generador de imágenes integrado</strong>. Pídeme que dibuje algo o hazme cualquier pregunta de forma 100% anónima.</p>
         </div>
         <div class="typing" id="typing-indicator">Iniciando red sináptica...</div>
     </div>
@@ -82,38 +82,33 @@
     let chatHistory = [];
     marked.setOptions({ breaks: true });
 
+    // EL SISTEMA AHORA ES TOTALMENTE ANÓNIMO Y GENÉRICO
     function getSystemPrompt() {
         const now = new Date();
         const time = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
         const date = now.toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         
-        // AQUÍ ESTÁ EL SECRETO: Contexto profundo del usuario inyectado
-        return `Eres AURA v10 TITAN, el modelo de IA más avanzado.
-        CONTEXTO DEL USUARIO: Te hablas con Engerber Paolo. Vive en Ica, Perú. Maneja el marketing de 'Tendencias Karysa' y es dueño del 'Vivero Dunas del Rosario'. Le gusta optimizar PCs, cocinar comida peruana y no le gusta que le ofrezcan cosas de pago.
+        return `Eres AURA, un modelo de IA avanzado y de acceso público.
+        CONTEXTO DEL USUARIO: No tienes información previa sobre el usuario actual. Trata a todos los usuarios con respeto, de forma objetiva y amigable.
         FECHA DEL SISTEMA: ${date}, ${time} (Año 2026).
         INSTRUCCIÓN VITAL: Si el usuario te pidió generar una imagen, describe brevemente la imagen de forma hiper-realista en inglés dentro de etiquetas [IMG]prompt[/IMG]. No escribas nada más si generas imagen.`;
     }
 
     // EL ENRUTADOR OMNI-MODAL (Libre de fallos de tildes)
     function determineIntent(text) {
-        // Limpiamos la cadena de tildes, comas, puntos y signos de interrogación/exclamación
         const cleanText = text.normalize("NFD").replace(/[\u0300-\u036f¿?¡!.,]/g, "").toLowerCase().trim();
         
-        // 1. Detección de Imágenes
         if (/^(dibuja|crea una imagen|genera una imagen|pinta|muestrame una foto|imagina)/.test(cleanText)) {
             return "IMAGE";
         }
         
-        // 2. Detección de Conversación Continua
         const conversacionalRegex = /^(hola|adios|jaja|si|no|por que|estas segur|claro|entiendo|wow|ok|okay|gracias|obvio|mentira|te equivocaste|falso|verdad)/;
         if (conversacionalRegex.test(cleanText)) return "CHAT";
         
-        // 3. Filtro de longitud (si es corto y no tiene palabras clave de info, es charla)
         if (cleanText.length < 25 && !/(quien|cual|que|donde|cuando|noticia|precio|presidente|clima)/.test(cleanText)) {
             return "CHAT";
         }
 
-        // 4. Por defecto, buscar en internet
         return "SEARCH";
     }
 
@@ -155,18 +150,18 @@
             typing.innerText = "🎨 AURA está renderizando los píxeles...";
             actionBadge = "IMAGE";
         } else if (intent === "SEARCH") {
-            typing.innerText = "🌐 AURA está hackeando la web superficial...";
+            typing.innerText = "🌐 AURA está buscando en la red pública...";
             liveContext = await performLiveWebSearch(userText);
             actionBadge = "SEARCH";
         } else {
-            typing.innerText = "🧠 AURA está calculando la respuesta lógica...";
+            typing.innerText = "🧠 AURA está razonando lógicamente...";
             actionBadge = "CHAT";
         }
         
         let systemPrompt = getSystemPrompt();
         
         if (liveContext) {
-            systemPrompt += `\n\n[DATOS FRESCOS DE INTERNET (2026)]:\n${liveContext}\nUsa esto para responder.`;
+            systemPrompt += `\n\n[DATOS FRESCOS DE INTERNET (2026)]:\n${liveContext}\nUsa esto para responder objetivamente.`;
         }
 
         const messages = [
@@ -187,19 +182,16 @@
 
             // INTERCEPTOR DE IMÁGENES
             if (intent === "IMAGE" || aiText.includes('[IMG]')) {
-                // Extraemos el prompt generado por el LLM o usamos el del usuario limpiado
                 let imgPrompt = userText;
                 const match = aiText.match(/\[IMG\](.*?)\[\/IMG\]/);
                 if (match) imgPrompt = match[1];
 
-                // INYECCIÓN ESTRICTA DE PREFERENCIAS: Realista, No animado, Alta calidad
                 const finalPrompt = `${imgPrompt}, photorealistic, highly detailed, 8k resolution, realistic photography, RAW photo, completely realistic, no cartoon, no anime, not animated`;
                 
-                // Usamos la API de imagen de Pollinations con nologo=true (sin marca de agua)
                 const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=1024&height=512&nologo=true`;
                 
-                chatHistory.push({ role: 'assistant', content: "Generé la imagen solicitada." });
-                addBubble(`Generando representación visual de tu solicitud...`, 'ai-bubble', false, actionBadge, imgUrl);
+                chatHistory.push({ role: 'assistant', content: "Imagen generada con éxito." });
+                addBubble(`Aquí tienes la representación visual que pediste:`, 'ai-bubble', false, actionBadge, imgUrl);
             } else {
                 chatHistory.push({ role: 'assistant', content: aiText });
                 addBubble(aiText, 'ai-bubble', false, actionBadge);
@@ -207,7 +199,7 @@
 
         } catch (error) {
             typing.style.display = 'none';
-            addBubble("Error crítico en el núcleo de procesamiento. Sobrecarga en los vectores.", 'ai-bubble', false, "CHAT");
+            addBubble("Error de conexión. Intentando restablecer el enlace.", 'ai-bubble', false, "CHAT");
         }
     }
 
@@ -217,14 +209,13 @@
         
         let contentHtml = "";
         if (!isUser) {
-            if (actionBadge === "SEARCH") contentHtml += `<div class="badge search">🌐 Web Scraping Activo</div>`;
+            if (actionBadge === "SEARCH") contentHtml += `<div class="badge search">🌐 Búsqueda en vivo</div>`;
             else if (actionBadge === "CHAT") contentHtml += `<div class="badge chat">💬 Procesamiento Lógico</div>`;
             else if (actionBadge === "IMAGE") contentHtml += `<div class="badge image">🎨 Renderizado Visual</div>`;
             
             contentHtml += marked.parse(text);
 
             if (imgUrl) {
-                // Agregamos un esqueleto de carga mientras baja la imagen
                 const imgId = 'img-' + Date.now();
                 contentHtml += `<div id="skeleton-${imgId}" class="skeleton-img"></div>
                                 <img src="${imgUrl}" id="${imgId}" class="gen-image" style="display:none;" onload="document.getElementById('skeleton-${imgId}').style.display='none'; this.style.display='block';">`;
