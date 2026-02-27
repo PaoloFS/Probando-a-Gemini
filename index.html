@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AURA v6.5 | Cognitive Core & Markdown</title>
+    <title>AURA v7.0 | RAG Engine</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --primary: #8b5cf6;
-            --secondary: #3b82f6;
+            --secondary: #ec4899; /* Cambié el secundario a un tono más vibrante para la v7 */
             --bg: #0f172a;
             --glass: rgba(30, 41, 59, 0.7);
             --text: #f8fafc;
@@ -18,7 +18,7 @@
         body {
             margin: 0;
             font-family: 'Outfit', sans-serif;
-            background: radial-gradient(circle at top right, #1e1b4b, var(--bg));
+            background: radial-gradient(circle at top right, #311042, var(--bg));
             color: var(--text);
             height: 100vh;
             display: flex;
@@ -52,18 +52,18 @@
         .ai-pulse {
             width: 12px;
             height: 12px;
-            background: #10b981;
+            background: var(--secondary);
             border-radius: 50%;
             display: inline-block;
             margin-right: 10px;
-            box-shadow: 0 0 15px #10b981;
+            box-shadow: 0 0 15px var(--secondary);
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(236, 72, 153, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
         }
 
         #chat-flow {
@@ -102,34 +102,16 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        /* ----- ESTILOS PARA EL RENDERIZADO MARKDOWN DE LA IA ----- */
+        /* Renderizado Markdown */
         .ai-bubble p { margin-top: 0; margin-bottom: 12px; }
         .ai-bubble p:last-child { margin-bottom: 0; }
         .ai-bubble strong { color: #fff; font-weight: 600; }
         .ai-bubble ul, .ai-bubble ol { margin: 10px 0; padding-left: 20px; }
         .ai-bubble li { margin-bottom: 5px; }
-        
-        /* Tablas hermosas para cuando la IA compare datos */
-        .ai-bubble table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin: 15px 0; 
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .ai-bubble th, .ai-bubble td { 
-            border: 1px solid rgba(255,255,255,0.1); 
-            padding: 10px 15px; 
-            text-align: left; 
-        }
-        .ai-bubble th { 
-            background: rgba(255,255,255,0.1); 
-            color: var(--primary); 
-            font-weight: 600; 
-        }
+        .ai-bubble table { width: 100%; border-collapse: collapse; margin: 15px 0; background: rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; }
+        .ai-bubble th, .ai-bubble td { border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; text-align: left; }
+        .ai-bubble th { background: rgba(255,255,255,0.1); color: var(--secondary); font-weight: 600; }
         .ai-bubble tr:nth-child(even) { background: rgba(255,255,255,0.02); }
-        /* --------------------------------------------------------- */
 
         .speak-btn {
             position: absolute;
@@ -148,16 +130,30 @@
 
         .speak-btn:hover { color: var(--secondary); }
 
+        .rag-badge {
+            font-size: 10px;
+            background: rgba(236, 72, 153, 0.2);
+            color: var(--secondary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(236, 72, 153, 0.5);
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
         .typing {
             align-self: flex-start;
-            color: #94a3b8;
-            font-size: 14px;
-            font-style: italic;
+            color: var(--secondary);
+            font-size: 13px;
+            font-weight: 600;
             display: none;
             background: rgba(255,255,255,0.02);
             padding: 10px 20px;
             border-radius: 20px;
+            animation: pulseText 1.5s infinite;
         }
+
+        @keyframes pulseText { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
         .input-wrapper {
             padding: 20px 30px;
@@ -168,37 +164,11 @@
             border-top: 1px solid rgba(255,255,255,0.05);
         }
 
-        input {
-            flex: 1;
-            padding: 16px 25px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.03);
-            color: white;
-            outline: none;
-            font-size: 16px;
-            font-family: inherit;
-            transition: 0.3s;
-        }
-
-        input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
-
-        button.send-btn {
-            padding: 16px 30px;
-            background: white;
-            color: var(--bg);
-            border: none;
-            border-radius: 16px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-
+        input { flex: 1; padding: 16px 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: white; outline: none; font-size: 16px; font-family: inherit; transition: 0.3s; }
+        input:focus { border-color: var(--secondary); background: rgba(255,255,255,0.08); }
+        button.send-btn { padding: 16px 30px; background: white; color: var(--bg); border: none; border-radius: 16px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
         button.send-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,255,255,0.2); }
-
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     </style>
@@ -207,15 +177,17 @@
 
 <div id="aura-container">
     <header>
-        <div style="font-size: 20px; font-weight: 600; letter-spacing: 1px;">AURA <span style="color: var(--primary); font-weight: 300;">v6.5</span></div>
-        <div style="font-size: 13px; color: #cbd5e1;"><span class="ai-pulse"></span> Motor Cognitivo + Renderizado Avanzado</div>
+        <div style="font-size: 20px; font-weight: 600; letter-spacing: 1px;">AURA <span style="color: var(--secondary); font-weight: 300;">v7.0 RAG</span></div>
+        <div style="font-size: 13px; color: #cbd5e1;"><span class="ai-pulse"></span> Sistema RAG (Web Search) Activo</div>
     </header>
 
     <div id="chat-flow">
         <div class="bubble ai-bubble">
-            <p>Sistemas de renderizado actualizados. Ahora entiendo y formateo <strong>tablas</strong>, <strong>listas</strong> y <strong>párrafos estructurados</strong>.</p><p>Prueba haciéndome de nuevo esa pregunta complicada o pidiéndome que compare dos cosas en una tabla.</p>
+            <div class="rag-badge">🌐 Conexión en Vivo Establecida</div>
+            <p>He integrado un módulo <strong>RAG</strong>. Ahora, si me preguntas sobre eventos actuales o personas, buscaré silenciosamente en la red para actualizar mis pesos neuronales antes de responderte.</p>
+            <p>Pregúntame quién es el presidente ahora mismo.</p>
         </div>
-        <div class="typing" id="typing-indicator">AURA está procesando información...</div>
+        <div class="typing" id="typing-indicator">Iniciando protocolos...</div>
     </div>
 
     <form class="input-wrapper" id="chat-form">
@@ -232,8 +204,6 @@
 
     let chatHistory = [];
     const synth = window.speechSynthesis;
-
-    // Configuración para que marked.js no use elementos deprecados
     marked.setOptions({ breaks: true });
 
     function getSystemPrompt() {
@@ -241,59 +211,102 @@
         const time = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
         const date = now.toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         
-        return `Eres AURA, un asistente de Inteligencia Artificial de élite. 
-        Contexto del usuario: Su nombre es Paolo, se encuentra en Ica, Perú.
-        Contexto temporal: Hoy es ${date} y la hora actual es ${time}.
-        Reglas: 
-        1. Utiliza formato Markdown generosamente (usa listas, negritas y tablas cuando sea útil para organizar la información).
-        2. Si te piden la hora o fecha, da los datos reales del contexto temporal.
-        3. Responde en el mismo idioma en el que te hable el usuario.
-        4. Tienes memoria. Mantén el hilo de la conversación.`;
+        return `Eres AURA, un asistente de Inteligencia Artificial.
+        Usuario: Paolo. Ubicación: Ica, Perú.
+        Fecha Actual del Sistema: Hoy es ${date} (Febrero 2026). Hora: ${time}.
+        Regla ORO: Tienes una fecha de corte de conocimiento, PERO se te proporcionará contexto en tiempo real extraído de internet si el usuario hace preguntas de actualidad. USA SIEMPRE el contexto en tiempo real para dar respuestas exactas sobre el presente (2026).
+        Responde en el mismo idioma del usuario. Usa Markdown para formatear.`;
+    }
+
+    async function fetchRealTimeContext(query) {
+        // Detectar si la consulta es en inglés para buscar en la wiki correcta
+        const isEnglish = /(who|what|where|when|how|is|are|the|president)/i.test(query);
+        const lang = isEnglish ? 'en' : 'es';
+        
+        // Limpiar la consulta para buscar solo palabras clave
+        const cleanQuery = query.replace(/(quien|que|como|cuando|donde|is|who|what|where|when|the|a|of|el|la|los|las)/gi, "").trim();
+        
+        if (cleanQuery.length < 3) return "";
+
+        try {
+            // Buscamos en la Wikipedia en vivo
+            const searchRes = await fetch(`https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&format=json&origin=*`);
+            const searchData = await searchRes.json();
+            
+            if (searchData.query.search.length > 0) {
+                const title = searchData.query.search[0].title;
+                const pageRes = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+                const pageData = await pageRes.json();
+                return pageData.extract; // Este es el dato fresco de internet
+            }
+        } catch (e) {
+            console.log("Fallo en la extracción de datos en vivo.");
+        }
+        return "";
     }
 
     async function processAura(userText) {
-        addBubble(userText, 'user-bubble', false, true); // Es texto del usuario, no lo parseamos como markdown complejo
+        addBubble(userText, 'user-bubble', false, true);
         
         typing.style.display = 'block';
+        typing.innerText = "🔍 AURA está escaneando la red mundial...";
         flow.appendChild(typing);
         flow.scrollTop = flow.scrollHeight;
 
         chatHistory.push({ role: 'user', content: userText });
+
+        // PASO 1: Ejecutar RAG (Búsqueda invisible)
+        const liveContext = await fetchRealTimeContext(userText);
         
+        // PASO 2: Inyectar el dato en el cerebro del LLM
+        let systemPrompt = getSystemPrompt();
+        let wasRagUsed = false;
+        if (liveContext) {
+            systemPrompt += `\n\n[CONTEXTO DE INTERNET EN VIVO EXTRAÍDO AHORA MISMO]: "${liveContext}". \nUtiliza estrictamente esta información para responder si aplica a la pregunta.`;
+            wasRagUsed = true;
+        }
+
         const messages = [
-            { role: 'system', content: getSystemPrompt() },
+            { role: 'system', content: systemPrompt },
             ...chatHistory.slice(-6)
         ];
 
         try {
+            typing.innerText = "🧠 AURA está sintetizando la respuesta...";
             const response = await fetch('https://text.pollinations.ai/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ messages: messages })
             });
 
-            if (!response.ok) throw new Error('Network response was not ok');
+            if (!response.ok) throw new Error('Network error');
             
             const aiText = await response.text();
             
             typing.style.display = 'none';
             chatHistory.push({ role: 'assistant', content: aiText });
             
-            addBubble(aiText, 'ai-bubble', true, false);
+            addBubble(aiText, 'ai-bubble', true, false, wasRagUsed);
 
         } catch (error) {
             typing.style.display = 'none';
-            addBubble("Lo siento Paolo, hay interferencia en la red neuronal en este momento.", 'ai-bubble', false, false);
+            addBubble("Error en el núcleo cognitivo. Por favor, intenta de nuevo.", 'ai-bubble', false, false);
         }
     }
 
-    function addBubble(text, className, addVoice = false, isUser = false) {
+    function addBubble(text, className, addVoice = false, isUser = false, wasRagUsed = false) {
         const div = document.createElement('div');
         div.className = `bubble ${className}`;
         
-        // Magia aquí: Si es la IA, parseamos el texto usando Marked.js para formatear tablas y listas
+        let contentHtml = "";
+        
         if (!isUser) {
-            div.innerHTML = marked.parse(text);
+            // Si la IA usó datos de internet, mostramos una pequeña insignia
+            if (wasRagUsed) {
+                contentHtml += `<div class="rag-badge">🌐 Datos en vivo utilizados</div>`;
+            }
+            contentHtml += marked.parse(text);
+            div.innerHTML = contentHtml;
         } else {
             div.innerText = text;
         }
@@ -302,7 +315,6 @@
             const btn = document.createElement('button');
             btn.className = 'speak-btn';
             btn.innerHTML = '▶ Escuchar';
-            // Le pasamos el texto limpio de markdown a la API de voz
             const plainText = text.replace(/[*_#|`]/g, '');
             btn.onclick = () => speak(plainText);
             div.appendChild(btn);
@@ -315,7 +327,6 @@
     function speak(text) {
         synth.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        
         const isEnglish = /^[a-zA-Z\s.,?!]+$/.test(text.substring(0, 30)); 
         utterance.lang = isEnglish ? 'en-US' : 'es-PE';
         
