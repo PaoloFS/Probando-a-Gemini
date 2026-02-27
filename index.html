@@ -3,34 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AURA v8.0 | Omniscient RAG</title>
+    <title>AURA v9.0 | Protocolo Gemini (Intent Routing)</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        :root { --primary: #8b5cf6; --secondary: #06b6d4; --bg: #0f172a; --glass: rgba(30, 41, 59, 0.7); --text: #f8fafc; }
-        body { margin: 0; font-family: 'Outfit', sans-serif; background: radial-gradient(circle at top right, #082f49, var(--bg)); color: var(--text); height: 100vh; display: flex; justify-content: center; align-items: center; }
-        #aura-container { width: 95%; max-width: 1000px; height: 85vh; background: var(--glass); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden; }
+        :root { --primary: #3b82f6; --secondary: #10b981; --bg: #0f172a; --glass: rgba(30, 41, 59, 0.85); --text: #f8fafc; }
+        body { margin: 0; font-family: 'Outfit', sans-serif; background: radial-gradient(circle at top right, #020617, var(--bg)); color: var(--text); height: 100vh; display: flex; justify-content: center; align-items: center; }
+        #aura-container { width: 95%; max-width: 1000px; height: 85vh; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden; }
         header { padding: 20px 30px; background: rgba(15, 23, 42, 0.6); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         .ai-pulse { width: 12px; height: 12px; background: var(--secondary); border-radius: 50%; display: inline-block; margin-right: 10px; box-shadow: 0 0 15px var(--secondary); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); } }
+        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
         #chat-flow { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 25px; scroll-behavior: smooth; }
         .bubble { max-width: 85%; padding: 20px 25px; border-radius: 20px; font-size: 15px; line-height: 1.6; animation: slideUp 0.3s ease-out; position: relative; }
-        .user-bubble { align-self: flex-end; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-bottom-right-radius: 4px; }
+        .user-bubble { align-self: flex-end; background: linear-gradient(135deg, var(--primary), #2563eb); color: white; border-bottom-right-radius: 4px; }
         .ai-bubble { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #e2e8f0; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .ai-bubble p { margin-top: 0; margin-bottom: 12px; } .ai-bubble p:last-child { margin-bottom: 0; }
         .ai-bubble strong { color: #fff; font-weight: 600; }
         .ai-bubble ul, .ai-bubble ol { margin: 10px 0; padding-left: 20px; }
         .ai-bubble table { width: 100%; border-collapse: collapse; margin: 15px 0; background: rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; }
         .ai-bubble th, .ai-bubble td { border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; text-align: left; }
-        .ai-bubble th { background: rgba(255,255,255,0.1); color: var(--secondary); font-weight: 600; }
-        .speak-btn { position: absolute; bottom: -28px; left: 10px; background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px; transition: color 0.2s; }
-        .speak-btn:hover { color: var(--secondary); }
-        .rag-badge { font-size: 10px; background: rgba(6, 182, 212, 0.2); color: var(--secondary); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.5); margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; }
-        .typing { align-self: flex-start; color: var(--secondary); font-size: 13px; font-weight: 600; display: none; background: rgba(255,255,255,0.02); padding: 10px 20px; border-radius: 20px; animation: pulseText 1.5s infinite; }
+        .ai-bubble th { background: rgba(255,255,255,0.1); color: var(--primary); font-weight: 600; }
+        
+        .rag-badge { font-size: 10px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.5); margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; }
+        .chat-badge { font-size: 10px; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.5); margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; }
+        
+        .typing { align-self: flex-start; color: #94a3b8; font-size: 13px; font-weight: 600; display: none; background: rgba(255,255,255,0.02); padding: 10px 20px; border-radius: 20px; animation: pulseText 1.5s infinite; }
         @keyframes pulseText { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        
         .input-wrapper { padding: 20px 30px; background: rgba(15, 23, 42, 0.8); display: flex; gap: 15px; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
         input { flex: 1; padding: 16px 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: white; outline: none; font-size: 16px; font-family: inherit; transition: 0.3s; }
-        input:focus { border-color: var(--secondary); background: rgba(255,255,255,0.08); }
+        input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
         button.send-btn { padding: 16px 30px; background: white; color: var(--bg); border: none; border-radius: 16px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
         button.send-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,255,255,0.2); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -41,21 +43,21 @@
 
 <div id="aura-container">
     <header>
-        <div style="font-size: 20px; font-weight: 600; letter-spacing: 1px;">AURA <span style="color: var(--secondary); font-weight: 300;">v8.0 OMNISCIENT</span></div>
-        <div style="font-size: 13px; color: #cbd5e1;"><span class="ai-pulse"></span> Web Scraper Proxy Activo</div>
+        <div style="font-size: 20px; font-weight: 600; letter-spacing: 1px;">AURA <span style="color: var(--primary); font-weight: 300;">v9.0 LOGIC</span></div>
+        <div style="font-size: 13px; color: #cbd5e1;"><span class="ai-pulse"></span> Enrutamiento de Intenciones (Gemini Core)</div>
     </header>
 
     <div id="chat-flow">
         <div class="bubble ai-bubble">
-            <div class="rag-badge">🔍 Motor de Búsqueda Web Desbloqueado</div>
-            <p>Ya no dependo de Wikipedia. He sido equipada con un <strong>Web Scraper</strong> que utiliza un proxy inverso para leer los titulares y resúmenes de internet en tiempo real.</p>
-            <p>Pregúntame sobre el presidente actual o cualquier noticia de último minuto.</p>
+            <div class="chat-badge">🧠 Cerebro Lógico Activado</div>
+            <p>He sido actualizada con el <strong>Protocolo Gemini</strong>. Ya no buscaré ciegamente en internet cada vez que me hables.</p>
+            <p>Si me pides un dato duro, activaré mi Scraper. Si solo quieres charlar o debatir una respuesta anterior, usaré mi razonamiento interno. Prueba preguntarme quién es el presidente y luego dime "¿estás completamente segura?".</p>
         </div>
         <div class="typing" id="typing-indicator">Iniciando protocolos...</div>
     </div>
 
     <form class="input-wrapper" id="chat-form">
-        <input type="text" id="userInput" placeholder="Pregunta sobre la actualidad mundial..." autofocus autocomplete="off">
+        <input type="text" id="userInput" placeholder="Habla conmigo o pregúntame algo..." autofocus autocomplete="off">
         <button type="submit" class="send-btn">Enviar</button>
     </form>
 </div>
@@ -67,50 +69,51 @@
     const typing = document.getElementById('typing-indicator');
 
     let chatHistory = [];
-    const synth = window.speechSynthesis;
     marked.setOptions({ breaks: true });
 
     function getSystemPrompt() {
         const now = new Date();
-        const time = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
         const date = now.toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        
-        return `Eres AURA, el asistente de IA más avanzado.
-        Usuario: Paolo. Ubicación: Ica, Perú.
-        Fecha actual inamovible: ${date} (Año 2026). Hora: ${time}.
-        REGLA ABSOLUTA: Si se te proporciona [CONTEXTO DE INTERNET EN VIVO], debes usar esa información para responder, ya que representa la realidad actual del mundo en 2026. IGNORA tus datos de entrenamiento previos si contradicen el contexto en vivo.
-        Responde en el mismo idioma de la pregunta. Usa Markdown.`;
+        return `Eres AURA v9, una IA entrenada con lógica inspirada en Gemini.
+        Usuario: Paolo (Ica, Perú). Fecha: ${date}.
+        Eres conversacional, directa y honesta. Mantienes el contexto de la charla.`;
     }
 
-    // EL VERDADERO HACK: Scraper de DuckDuckGo a través de un Proxy CORS
+    // EL NUEVO CEREBRO: Clasificador de Intenciones (Intent Routing)
+    function determineIntent(text) {
+        // Frases típicas de continuación de charla o dudas que NO requieren Google
+        const conversacionalRegex = /^(hola|adios|jaja|si|no|por que|estas segur[oa]|claro|entiendo|wow|ok|okay|gracias|obvio|mentira|te equivocaste|falso|verdad)/i;
+        
+        // Si el texto es muy corto (menos de 25 caracteres) y no tiene palabras clave de búsqueda fuerte, es charla.
+        if (text.length < 25 && !/(quien|cual|que|donde|cuando|noticia|precio)/i.test(text)) {
+            return "CHAT";
+        }
+        
+        if (conversacionalRegex.test(text.trim())) {
+            return "CHAT";
+        }
+
+        return "SEARCH";
+    }
+
     async function performLiveWebSearch(query) {
-        // Limpiamos palabras comunes para hacer una búsqueda más efectiva como lo haría un humano
         const searchTerms = query.replace(/(quien|que|como|cuando|donde|is|who|what|where|when|the|a|of|el|la|los|las|dime|acerca)/gi, "").trim();
         if (searchTerms.length < 3) return "";
 
         try {
-            // Usamos DuckDuckGo HTML versión ligera (para evitar bloqueos pesados)
             const targetUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(searchTerms)}`;
-            // AllOrigins actúa como nuestro puente para evitar el error CORS del navegador
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
 
             const response = await fetch(proxyUrl);
             const data = await response.json();
-            const htmlString = data.contents;
-
-            // DOMParser convierte el texto HTML en elementos legibles para extraer los datos
             const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlString, 'text/html');
+            const doc = parser.parseFromString(data.contents, 'text/html');
             
-            // Extraemos los "snippets" (resúmenes) de los primeros 5 resultados de búsqueda
             const snippets = Array.from(doc.querySelectorAll('.result__snippet'))
-                                  .slice(0, 5)
+                                  .slice(0, 3) // Reducido a 3 para no saturar al LLM
                                   .map(el => el.innerText.trim())
                                   .join('\n- ');
-
-            if (snippets) {
-                return `- ${snippets}`;
-            }
+            if (snippets) return `- ${snippets}`;
         } catch (e) {
             console.warn("Proxy Web Search failed:", e);
         }
@@ -118,32 +121,39 @@
     }
 
     async function processAura(userText) {
-        addBubble(userText, 'user-bubble', false, true);
+        addBubble(userText, 'user-bubble', true);
         
         typing.style.display = 'block';
-        typing.innerText = "🌐 AURA está scrapeando internet (Live Search)...";
         flow.appendChild(typing);
         flow.scrollTop = flow.scrollHeight;
 
         chatHistory.push({ role: 'user', content: userText });
 
-        // EJECUTAR EL SCRAPER
-        const liveContext = await performLiveWebSearch(userText);
+        // AURA TOMA UNA DECISIÓN
+        const intent = determineIntent(userText);
+        let liveContext = "";
+        let actionBadge = "";
+
+        if (intent === "SEARCH") {
+            typing.innerText = "🌐 AURA está consultando la red externa...";
+            liveContext = await performLiveWebSearch(userText);
+            actionBadge = "SEARCH";
+        } else {
+            typing.innerText = "🧠 AURA está razonando la respuesta...";
+            actionBadge = "CHAT";
+        }
         
         let systemPrompt = getSystemPrompt();
-        let wasRagUsed = false;
         
-        if (liveContext && liveContext.length > 10) {
-            systemPrompt += `\n\n[CONTEXTO DE INTERNET EN VIVO EXTRAÍDO AHORA MISMO DE MOTORES DE BÚSQUEDA]:\n${liveContext}\n\nUtiliza esta información reciente para formular tu respuesta.`;
-            wasRagUsed = true;
-            typing.innerText = "🧠 Procesando los resultados de la red...";
-        } else {
-            typing.innerText = "🧠 Analizando la solicitud localmente...";
+        if (liveContext) {
+            systemPrompt += `\n\n[DATOS FRESCOS DE INTERNET]:\n${liveContext}\nUsa esto para responder.`;
+        } else if (intent === "CHAT") {
+            systemPrompt += `\n\n[MODO CHARLA ACTIVO]: El usuario está conversando. No inventes datos externos, solo usa tu lógica y el historial de chat para responder a su duda o comentario de forma natural.`;
         }
 
         const messages = [
             { role: 'system', content: systemPrompt },
-            ...chatHistory.slice(-6)
+            ...chatHistory.slice(-8) // Recordamos más historial para mejor contexto
         ];
 
         try {
@@ -154,31 +164,29 @@
             });
 
             if (!response.ok) throw new Error('Network error');
-            
             const aiText = await response.text();
             
             typing.style.display = 'none';
             chatHistory.push({ role: 'assistant', content: aiText });
             
-            addBubble(aiText, 'ai-bubble', true, false, wasRagUsed);
+            addBubble(aiText, 'ai-bubble', false, actionBadge);
 
         } catch (error) {
             typing.style.display = 'none';
-            addBubble("Error en el núcleo de red. Los servidores externos rechazaron la conexión.", 'ai-bubble', false, false);
+            addBubble("Error en el núcleo lógico. Reiniciando sinapsis.", 'ai-bubble', false, "ERROR");
         }
     }
 
-    function addBubble(text, className, addVoice = false, isUser = false, wasRagUsed = false) {
+    function addBubble(text, className, isUser = false, actionBadge = "") {
         const div = document.createElement('div');
         div.className = `bubble ${className}`;
         
         let contentHtml = "";
         if (!isUser) {
-            if (wasRagUsed) {
-                contentHtml += `<div class="rag-badge">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                    Web Scrape Exitoso
-                </div>`;
+            if (actionBadge === "SEARCH") {
+                contentHtml += `<div class="rag-badge">🌐 Búsqueda Web Realizada</div>`;
+            } else if (actionBadge === "CHAT") {
+                contentHtml += `<div class="chat-badge">💬 Respuesta Lógica (Sin red)</div>`;
             }
             contentHtml += marked.parse(text);
             div.innerHTML = contentHtml;
@@ -186,29 +194,8 @@
             div.innerText = text;
         }
 
-        if (addVoice) {
-            const btn = document.createElement('button');
-            btn.className = 'speak-btn';
-            btn.innerHTML = '▶ Escuchar';
-            const plainText = text.replace(/[*_#|`]/g, '');
-            btn.onclick = () => speak(plainText);
-            div.appendChild(btn);
-        }
-
         flow.insertBefore(div, typing);
         flow.scrollTop = flow.scrollHeight;
-    }
-
-    function speak(text) {
-        synth.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        const isEnglish = /^[a-zA-Z\s.,?!]+$/.test(text.substring(0, 30)); 
-        utterance.lang = isEnglish ? 'en-US' : 'es-PE';
-        
-        const voices = synth.getVoices();
-        const preferredVoice = voices.find(v => v.lang.includes('es') && v.name.includes('Google'));
-        if (preferredVoice) utterance.voice = preferredVoice;
-        synth.speak(utterance);
     }
 
     form.onsubmit = (e) => {
