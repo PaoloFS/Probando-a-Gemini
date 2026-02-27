@@ -2,92 +2,120 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>IA ORACLE v4.0 | AGENTE AGNOSTICO</title>
+    <title>IA ORACLE v4.5 | QUANTUM EDITION</title>
     <style>
-        :root { --neon: #00ff41; --bg: #000a00; --panel: rgba(0, 20, 0, 0.95); }
-        body { background: var(--bg); color: var(--neon); font-family: 'Segoe UI', 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; height: 100vh; }
+        :root { --neon: #00ff41; --bg: #000800; --panel: rgba(0, 15, 0, 0.98); --accent: #00ccff; }
+        body { background: var(--bg); color: var(--neon); font-family: 'Consolas', 'Courier New', monospace; margin: 0; display: flex; height: 100vh; }
         
-        #sidebar { width: 300px; border-right: 1px solid var(--neon); padding: 20px; background: var(--panel); display: flex; flex-direction: column; gap: 20px; box-shadow: 10px 0 30px rgba(0,255,0,0.1); }
-        #main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        #sidebar { width: 280px; border-right: 1px dashed var(--neon); padding: 25px; background: var(--panel); display: flex; flex-direction: column; }
+        #main { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #001100 0%, #000 100%); }
         
-        #terminal { flex: 1; padding: 30px; overflow-y: auto; scroll-behavior: smooth; font-size: 14px; line-height: 1.6; }
-        #input-container { background: #000; border-top: 1px solid var(--neon); padding: 20px; display: flex; align-items: center; }
+        #terminal { flex: 1; padding: 30px; overflow-y: auto; scroll-behavior: smooth; }
+        #input-area { background: #000; border-top: 1px solid var(--neon); padding: 20px; display: flex; align-items: center; box-shadow: 0 -10px 20px rgba(0,255,0,0.05); }
         
-        input { background: transparent; border: none; color: var(--neon); font-size: 18px; flex: 1; outline: none; margin-left: 10px; }
-        .log-entry { margin-bottom: 15px; border-left: 2px solid #004400; padding-left: 15px; animation: fadeIn 0.3s ease; }
-        .ai-thought { color: #008800; font-style: italic; font-size: 12px; }
-        .ai-answer { color: #ffffff; background: rgba(0,255,0,0.05); padding: 15px; border-radius: 4px; border: 1px solid rgba(0,255,0,0.2); margin-top: 5px; box-shadow: 0 0 15px rgba(0,255,0,0.05); }
+        input { background: transparent; border: none; color: var(--neon); font-size: 18px; flex: 1; outline: none; margin-left: 15px; caret-color: var(--accent); }
         
-        .loading { display: inline-block; animation: rotate 1s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .log-entry { margin-bottom: 20px; animation: slideIn 0.2s ease-out; }
+        .ai-answer { color: #fff; background: rgba(0,255,0,0.03); padding: 18px; border-radius: 2px; border: 1px solid rgba(0,255,0,0.1); line-height: 1.6; position: relative; }
+        .ai-answer::before { content: "DATA_NODE"; position: absolute; top: -10px; right: 10px; font-size: 9px; background: var(--bg); padding: 0 5px; color: var(--neon); }
         
-        .badge { background: var(--neon); color: #000; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 3px; margin-right: 10px; }
+        .cmd { color: var(--accent); font-weight: bold; }
+        .badge { background: var(--neon); color: #000; padding: 2px 8px; font-size: 10px; font-weight: bold; margin-right: 10px; text-transform: uppercase; }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #020; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <h2 style="margin:0; font-size: 18px; letter-spacing: 2px;">ORACLE v4.0</h2>
-    <div style="font-size: 10px; color: #008800;">ESTADO DEL NÚCLEO: <span id="cpu-load">OPTIMAL</span></div>
-    <hr style="border: 0; border-top: 1px solid #141; width: 100%;">
-    <div class="stat-group">
-        <label style="font-size: 10px; display: block;">ENTORNO:</label>
-        <span id="env-type" style="color: #fff; font-size: 12px;">Detectando...</span>
+    <h2 style="margin:0; font-size: 20px; color: var(--accent);">ORACLE v4.5</h2>
+    <p style="font-size: 10px; color: #005500;">AGENTE DESPLEGADO EN GITHUB</p>
+    <hr style="border:0; border-top: 1px solid #030; margin: 20px 0;">
+    
+    <div style="font-size: 12px;">
+        <div style="margin-bottom: 10px;">USUARIO: <span style="color: #fff;">PAOLO_FELIPA</span></div>
+        <div style="margin-bottom: 10px;">HISTORIAL: <span id="hCount" style="color: var(--accent);">0</span> entradas</div>
+        <div style="margin-bottom: 10px;">LATENCIA: <span id="ping" style="color: var(--neon);">--</span> ms</div>
     </div>
+
     <div style="flex: 1;"></div>
-    <div style="font-size: 10px; color: #333;">DESARROLLADO POR GEMINI AI<br>PROYECTO: ELITE AGENT</div>
+    <div style="font-size: 10px; background: #010; padding: 10px; border: 1px solid #030;">
+        <span class="cmd">/clear</span> - Limpiar<br>
+        <span class="cmd">/stats</span> - Recursos<br>
+        <span class="cmd">/about</span> - Info
+    </div>
 </div>
 
 <div id="main">
     <div id="terminal">
-        <div class="log-entry">
-            <span class="badge">SISTEMA</span>
-            <span>Protocolo de búsqueda robusta inicializado. Esperando consulta semántica...</span>
-        </div>
+        <div class="log-entry"><span class="badge">SYSTEM</span> Sesión iniciada. Base de datos semántica vinculada.</div>
     </div>
-    
-    <div id="input-container">
-        <span style="color: var(--neon)">AGENTE_ID_00 ></span>
-        <input type="text" id="queryInput" placeholder="¿Qué deseas que investigue hoy?" autofocus>
+    <div id="input-area">
+        <span style="color: var(--accent); font-weight: bold;">[QN-00] ></span>
+        <input type="text" id="userInput" placeholder="Ingresa consulta o comando..." autofocus autocomplete="off">
     </div>
 </div>
 
 <script>
     const term = document.getElementById('terminal');
-    const input = document.getElementById('queryInput');
-    const envDisplay = document.getElementById('env-type');
+    const input = document.getElementById('userInput');
+    let history = JSON.parse(sessionStorage.getItem('ai_history') || "[]");
 
-    // Detectar si estamos en GitHub o local
-    envDisplay.innerText = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-        ? 'ENTORNO DE DESARROLLO (LOCAL)' 
-        : window.location.hostname.includes('github') ? 'SERVIDOR REMOTO (GITHUB)' : 'SISTEMA DE ARCHIVOS (LIMITADO)';
+    document.getElementById('hCount').innerText = history.length;
 
-    async function processQuery(q) {
-        createEntry('SISTEMA', `Analizando intención: "${q}"...`);
-        const thought = createEntry('IA_THOUGHT', 'Consultando grafos de conocimiento global...', 'ai-thought');
+    async function execute(val) {
+        const start = performance.now();
         
+        // Manejo de Comandos
+        if (val.startsWith('/')) {
+            handleCommand(val.toLowerCase());
+            return;
+        }
+
+        addLog('USER', val, 'cmd');
+        const loading = addLog('AI_PROC', 'Sincronizando con red neuronal...', 'ai-thought');
+
         try {
-            // Buscamos primero en Wikipedia para obtener el término exacto
-            const searchRes = await fetch(`https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`);
+            // Limpieza de consulta (NLP básico)
+            let cleanQuery = val.toLowerCase().replace(/cuando|donde|quien|dime|que/g, "").trim();
+            
+            const searchRes = await fetch(`https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&format=json&origin=*`);
             const searchData = await searchRes.json();
             
-            if (searchData.query.search.length === 0) throw new Error('No se encontraron coincidencias.');
-
-            const bestMatch = searchData.query.search[0].title;
-            thought.innerText = `Sincronizando con la entrada: ${bestMatch}...`;
-
-            // Obtenemos el resumen detallado
-            const pageRes = await fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(bestMatch)}`);
+            if (!searchData.query.search[0]) throw new Error();
+            
+            const title = searchData.query.search[0].title;
+            const pageRes = await fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
             const pageData = await pageRes.json();
 
-            createEntry('IA_ORACLE', pageData.extract, 'ai-answer');
-        } catch (err) {
-            createEntry('ERROR', 'La red ha rechazado la conexión o el término es demasiado ambiguo. Intenta con un nombre propio o evento histórico.', 'error');
+            loading.remove();
+            addLog('ORACLE', pageData.extract, 'ai-answer');
+            
+            // Guardar en memoria
+            history.push({q: val, a: title});
+            sessionStorage.setItem('ai_history', JSON.stringify(history));
+            document.getElementById('hCount').innerText = history.length;
+
+        } catch (e) {
+            loading.innerText = "ERROR: No se encontraron nodos de información para esta consulta.";
+        }
+        
+        document.getElementById('ping').innerText = Math.round(performance.now() - start);
+    }
+
+    function handleCommand(cmd) {
+        if (cmd === '/clear') {
+            term.innerHTML = '<div class="log-entry"><span class="badge">SYSTEM</span> Terminal purgada.</div>';
+        } else if (cmd === '/stats') {
+            addLog('STATS', `Memoria activa: ${history.length} objetos. Latencia prom: ${document.getElementById('ping').innerText}ms.`, 'ai-answer');
+        } else if (cmd === '/about') {
+            addLog('INFO', "Oracle v4.5 Quantum - Desarrollado por Gemini para Paolo Felipa. Ica, 2026.", 'ai-answer');
         }
     }
 
-    function createEntry(tag, text, className = '') {
+    function addLog(tag, text, className = '') {
         const div = document.createElement('div');
         div.className = 'log-entry ' + className;
         div.innerHTML = `<span class="badge">${tag}</span> <span>${text}</span>`;
@@ -96,11 +124,10 @@
         return div;
     }
 
-    input.addEventListener('keypress', async (e) => {
-        if (e.key === 'Enter' && input.value.trim() !== '') {
-            const val = input.value;
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && input.value) {
+            execute(input.value);
             input.value = '';
-            await processQuery(val);
         }
     });
 </script>
